@@ -10,8 +10,8 @@
 body{
 font-family:Arial;
 background:#e8f5e9;
-text-align:center;
 margin:0;
+text-align:center;
 }
 
 header{
@@ -20,22 +20,27 @@ color:white;
 padding:20px;
 }
 
-.container{
-margin-top:60px;
-}
-
-input{
-padding:10px;
-margin:10px;
-width:200px;
+.menu{
+margin:20px;
 }
 
 button{
-padding:12px 20px;
+padding:10px 20px;
+margin:5px;
+border:none;
 background:#4CAF50;
 color:white;
-border:none;
 cursor:pointer;
+}
+
+.section{
+display:none;
+margin-top:20px;
+}
+
+input{
+padding:8px;
+margin:5px;
 }
 
 </style>
@@ -48,7 +53,32 @@ cursor:pointer;
 <h1>Agronex Cow Tracking System</h1>
 </header>
 
-<div class="container">
+<div class="menu">
+
+<button onclick="showSection('login')">Giriş</button>
+<button onclick="showSection('register')">Üye Ol</button>
+<button onclick="showSection('dashboard')">Panel</button>
+<button onclick="showSection('cow')">İnek Takip</button>
+<button onclick="showSection('vaccine')">Aşı Takvimi</button>
+<button onclick="showSection('heat')">Kızgınlık</button>
+
+</div>
+
+<div id="login" class="section">
+
+<h2>Giriş Yap</h2>
+
+<input id="loginEmail" placeholder="Gmail">
+<br>
+<input id="loginPassword" type="password" placeholder="Şifre">
+<br>
+
+<button onclick="login()">Giriş Yap</button>
+
+</div>
+
+
+<div id="register" class="section">
 
 <h2>Üye Ol</h2>
 
@@ -60,21 +90,68 @@ cursor:pointer;
 
 <button onclick="register()">Üye Ol</button>
 
-<hr>
+</div>
 
-<h2>Giriş Yap</h2>
 
-<input id="loginEmail" placeholder="Gmail">
-<br>
+<div id="dashboard" class="section">
 
-<input id="loginPassword" type="password" placeholder="Şifre">
-<br>
+<h2>Kontrol Paneli</h2>
 
-<button onclick="login()">Giriş Yap</button>
+<p>Sistem çalışıyor</p>
 
 </div>
 
+
+<div id="cow" class="section">
+
+<h2>İnek Takip</h2>
+
+<input id="cowID" placeholder="İnek ID">
+
+<button onclick="addCow()">İnek Ekle</button>
+
+<ul id="cowList"></ul>
+
+</div>
+
+
+<div id="vaccine" class="section">
+
+<h2>Aşı Takvimi</h2>
+
+<input id="vCowID" placeholder="İnek ID">
+<br>
+
+<input id="vDate" type="date">
+
+<button onclick="addVaccine()">Ekle</button>
+
+<ul id="vaccineList"></ul>
+
+</div>
+
+
+<div id="heat" class="section">
+
+<h2>Kızgınlık Algılama</h2>
+
+<ul id="heatList"></ul>
+
+</div>
+
+
 <script>
+
+function showSection(id){
+
+let sections=document.querySelectorAll(".section")
+
+sections.forEach(s=>s.style.display="none")
+
+document.getElementById(id).style.display="block"
+
+}
+
 
 function register(){
 
@@ -87,6 +164,7 @@ alert("Üyelik oluşturuldu")
 
 }
 
+
 function login(){
 
 let email=document.getElementById("loginEmail").value
@@ -98,15 +176,44 @@ if(stored==password){
 
 alert("Giriş başarılı")
 
-window.location="dashboard.html"
+showSection("dashboard")
 
-}
-
-else{
+}else{
 
 alert("Hatalı giriş")
 
 }
+
+}
+
+
+function addCow(){
+
+let id=document.getElementById("cowID").value
+
+let list=document.getElementById("cowList")
+
+let li=document.createElement("li")
+
+li.innerText="İnek ID: "+id
+
+list.appendChild(li)
+
+}
+
+
+function addVaccine(){
+
+let id=document.getElementById("vCowID").value
+let date=document.getElementById("vDate").value
+
+let list=document.getElementById("vaccineList")
+
+let li=document.createElement("li")
+
+li.innerText="İnek "+id+" - Aşı Tarihi: "+date
+
+list.appendChild(li)
 
 }
 
