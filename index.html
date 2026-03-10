@@ -48,6 +48,7 @@ img.cow{width:200px;margin-bottom:20px;border-radius:10px;}
 <button onclick="showTab('heat')">Kızgınlık</button>
 </div>
 
+<!-- Dashboard -->
 <div id="dashboard" class="section">
 <h3>Dashboard</h3>
 <div class="chart-container">
@@ -58,6 +59,7 @@ img.cow{width:200px;margin-bottom:20px;border-radius:10px;}
 </div>
 </div>
 
+<!-- Cow Tracking -->
 <div id="cow" class="section">
 <h3>İnek Takip</h3>
 <input id="cowID" placeholder="İnek ID">
@@ -65,6 +67,7 @@ img.cow{width:200px;margin-bottom:20px;border-radius:10px;}
 <ul id="cowList"></ul>
 </div>
 
+<!-- Vaccine Schedule -->
 <div id="vaccine" class="section">
 <h3>Aşı Takvimi</h3>
 <input id="vCowID" placeholder="İnek ID"><br>
@@ -73,6 +76,7 @@ img.cow{width:200px;margin-bottom:20px;border-radius:10px;}
 <ul id="vaccineList"></ul>
 </div>
 
+<!-- Heat Detection -->
 <div id="heat" class="section">
 <h3>Kızgınlık Algılama</h3>
 <ul id="heatList"></ul>
@@ -108,16 +112,26 @@ function showTab(id){
   document.getElementById(id).style.display='block'
 }
 
+// İnek ekleme ve silme
 function addCow(){
   let id=document.getElementById("cowID").value
   if(!id) return;
   let list=document.getElementById("cowList")
   let li=document.createElement("li")
   li.innerText="İnek ID: "+id
+
+  // Sil butonu ekle
+  let btn=document.createElement("button")
+  btn.innerText="Sil"
+  btn.style.marginLeft="10px"
+  btn.onclick=function(){ list.removeChild(li) }
+
+  li.appendChild(btn)
   list.appendChild(li)
   document.getElementById("cowID").value=""
 }
 
+// Aşı ekleme
 function addVaccine(){
   let id=document.getElementById("vCowID").value
   let date=document.getElementById("vDate").value
@@ -130,6 +144,7 @@ function addVaccine(){
   document.getElementById("vDate").value=""
 }
 
+// Kızgınlık simülasyonu
 function simulateHeat(){
   let list=document.getElementById("heatList")
   let li=document.createElement("li")
@@ -137,6 +152,7 @@ function simulateHeat(){
   list.appendChild(li)
 }
 
+// Grafik simülasyonu
 let tempChart, activityChart
 function simulateData(){
   const ctx1=document.getElementById('tempChart').getContext('2d')
