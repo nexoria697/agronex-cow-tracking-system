@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 
 <head>
 <meta charset="UTF-8">
@@ -21,22 +21,21 @@ padding:20px;
 }
 
 .container{
-margin-top:80px;
+margin-top:60px;
+}
+
+input{
+padding:10px;
+margin:10px;
+width:200px;
 }
 
 button{
-padding:15px 25px;
-margin:10px;
-border:none;
+padding:12px 20px;
 background:#4CAF50;
 color:white;
-font-size:16px;
+border:none;
 cursor:pointer;
-border-radius:6px;
-}
-
-button:hover{
-background:#388e3c;
 }
 
 </style>
@@ -47,29 +46,68 @@ background:#388e3c;
 
 <header>
 <h1>Agronex Cow Tracking System</h1>
-<p>Nexoria Smart Farming Technology</p>
 </header>
 
 <div class="container">
 
-<h2>Sisteme Hoşgeldiniz</h2>
+<h2>Üye Ol</h2>
 
-<p>İneklerinizi takip edin, sıcaklık ve aktivite verilerini izleyin.</p>
+<input id="email" placeholder="Gmail">
+<br>
 
-<button onclick="login()">Giriş Yap</button>
+<input id="password" type="password" placeholder="Şifre">
+<br>
 
 <button onclick="register()">Üye Ol</button>
+
+<hr>
+
+<h2>Giriş Yap</h2>
+
+<input id="loginEmail" placeholder="Gmail">
+<br>
+
+<input id="loginPassword" type="password" placeholder="Şifre">
+<br>
+
+<button onclick="login()">Giriş Yap</button>
 
 </div>
 
 <script>
 
-function login(){
-alert("Giriş sistemi yakında eklenecek");
+function register(){
+
+let email=document.getElementById("email").value
+let password=document.getElementById("password").value
+
+localStorage.setItem(email,password)
+
+alert("Üyelik oluşturuldu")
+
 }
 
-function register(){
-alert("Üyelik sistemi yakında eklenecek");
+function login(){
+
+let email=document.getElementById("loginEmail").value
+let password=document.getElementById("loginPassword").value
+
+let stored=localStorage.getItem(email)
+
+if(stored==password){
+
+alert("Giriş başarılı")
+
+window.location="dashboard.html"
+
+}
+
+else{
+
+alert("Hatalı giriş")
+
+}
+
 }
 
 </script>
