@@ -3,139 +3,311 @@
 <head>
 <meta charset="UTF-8">
 <title>Agronex Cow Tracking System</title>
+
 <style>
-body{font-family:Arial;background:#e8f5e9;margin:0;text-align:center;}
-header{background:#2e7d32;color:white;padding:20px;}
-header img{height:60px;vertical-align:middle;}
-.container{margin-top:30px;}
-button{padding:10px 20px;margin:5px;border:none;background:#4CAF50;color:white;cursor:pointer;border-radius:5px;}
-input{padding:8px;margin:5px;width:200px;}
-.section{display:none;margin-top:20px;}
-ul{list-style:none;padding-left:0;}
-img.cow{width:200px;margin-bottom:20px;border-radius:10px;}
+
+body{
+font-family:Arial;
+background:#e8f5e9;
+margin:0;
+text-align:center;
+}
+
+header{
+background:#2e7d32;
+color:white;
+padding:20px;
+}
+
+.container{
+margin-top:30px;
+}
+
+button{
+padding:10px 20px;
+margin:5px;
+border:none;
+background:#4CAF50;
+color:white;
+cursor:pointer;
+border-radius:5px;
+}
+
+input{
+padding:8px;
+margin:5px;
+width:200px;
+}
+
+.section{
+display:none;
+margin-top:20px;
+}
+
+ul{
+list-style:none;
+padding-left:0;
+}
+
 </style>
 </head>
 
+
 <body>
 
+
 <header>
-<img src="agroneX_logo.png" alt="Agronex Logo">
 <h1>Agronex Cow Tracking System</h1>
 </header>
 
+
 <div id="loginSection" class="container">
-<img src="cow.png" class="cow" alt="Cow Image">
+
 <h2>Giriş Yap</h2>
+
 <input id="loginEmail" placeholder="Gmail"><br>
 <input id="loginPassword" type="password" placeholder="Şifre"><br>
+
 <button onclick="login()">Giriş Yap</button>
+
 <hr>
+
 <h2>Üye Ol</h2>
+
 <input id="email" placeholder="Gmail"><br>
 <input id="password" type="password" placeholder="Şifre"><br>
+
 <button onclick="register()">Üye Ol</button>
+
 </div>
+
+
 
 <div id="systemPanel" class="container section">
 
 <h2>Kontrol Paneli</h2>
-<div>
+
 <button onclick="showTab('dashboard')">Dashboard</button>
 <button onclick="showTab('cow')">İnek Takip</button>
 <button onclick="showTab('vaccine')">Aşı Takvimi</button>
 <button onclick="showTab('heat')">Kızgınlık</button>
-</div>
+
+
 
 <div id="dashboard" class="section">
+
 <h3>Dashboard</h3>
-<p>ESP32 istasyonu bağlandığında grafikler buraya gelecek.</p>
+
+<p>ESP32 istasyonu bağlandığında veriler burada görünecek.</p>
+
 </div>
+
+
 
 <div id="cow" class="section">
+
 <h3>İnek Takip</h3>
+
 <input id="cowID" placeholder="İnek ID">
+
 <button onclick="addCow()">İnek Ekle</button>
+
 <ul id="cowList"></ul>
+
 </div>
+
+
 
 <div id="vaccine" class="section">
+
 <h3>Aşı Takvimi</h3>
+
 <input id="vCowID" placeholder="İnek ID"><br>
+
 <input id="vDate" type="date"><br>
+
 <button onclick="addVaccine()">Ekle</button>
+
 <ul id="vaccineList"></ul>
+
 </div>
+
+
 
 <div id="heat" class="section">
+
 <h3>Kızgınlık Algılama</h3>
+
 <ul id="heatList"></ul>
+
 <p>ESP32 bağlandığında veriler buraya gelecek.</p>
+
 </div>
 
+</div>
+
+
+
+
 <script>
+
+
 function register(){
-  let email=document.getElementById("email").value
-  let password=document.getElementById("password").value
-  if(email && password){
-    localStorage.setItem(email,password)
-    alert("Üyelik oluşturuldu")
-  } else { alert("Lütfen tüm alanları doldur") }
+
+let email=document.getElementById("email").value
+let password=document.getElementById("password").value
+
+
+if(!email.includes("@gmail.com")){
+alert("Sadece gmail kullanabilirsiniz")
+return
 }
+
+if(localStorage.getItem(email)){
+alert("Bu email zaten kayıtlı!")
+return
+}
+
+localStorage.setItem(email,password)
+
+alert("Üyelik oluşturuldu")
+
+}
+
+
 
 function login(){
-  let email=document.getElementById("loginEmail").value
-  let password=document.getElementById("loginPassword").value
-  let stored=localStorage.getItem(email)
-  if(stored==password){
-    alert("Giriş başarılı")
-    document.getElementById("loginSection").style.display="none"
-    document.getElementById("systemPanel").style.display="block"
-    showTab('dashboard')
-  } else{ alert("Hatalı giriş") }
+
+let email=document.getElementById("loginEmail").value
+let password=document.getElementById("loginPassword").value
+
+let storedPassword = localStorage.getItem(email)
+
+if(storedPassword === null){
+alert("Bu email ile kayıtlı hesap yok!")
+return
 }
+
+if(storedPassword !== password){
+alert("Şifre yanlış!")
+return
+}
+
+alert("Giriş başarılı")
+
+document.getElementById("loginSection").style.display="none"
+
+document.getElementById("systemPanel").style.display="block"
+
+renderCows()
+
+}
+
+
+
 
 function showTab(id){
-  let tabs=document.querySelectorAll('#systemPanel .section')
-  tabs.forEach(t=>t.style.display='none')
-  document.getElementById(id).style.display='block'
+
+let tabs=document.querySelectorAll('#systemPanel .section')
+
+tabs.forEach(t=>t.style.display='none')
+
+document.getElementById(id).style.display='block'
+
 }
+
+
+
+
 
 function addCow(){
-  let id=document.getElementById("cowID").value
-  if(!id) return;
-  let list=document.getElementById("cowList")
-  let li=document.createElement("li")
-  li.style.marginBottom="5px"
-  li.innerText="İnek ID: "+id
 
-  // Sil butonu
-  let btn=document.createElement("button")
-  btn.innerText="Sil"
-  btn.style.marginLeft="10px"
-  btn.style.backgroundColor="#f44336"
-  btn.onclick=function(){ list.removeChild(li) }
+let id=document.getElementById("cowID").value
 
-  li.appendChild(btn)
-  list.appendChild(li)
-  document.getElementById("cowID").value=""
+if(!id) return
+
+let cows = JSON.parse(localStorage.getItem("cows")) || []
+
+cows.push(id)
+
+localStorage.setItem("cows", JSON.stringify(cows))
+
+renderCows()
+
+document.getElementById("cowID").value=""
+
 }
+
+
+
+
+function renderCows(){
+
+let cows = JSON.parse(localStorage.getItem("cows")) || []
+
+let list = document.getElementById("cowList")
+
+list.innerHTML=""
+
+cows.forEach((cow,index)=>{
+
+let li = document.createElement("li")
+
+li.innerText="İnek ID: "+cow
+
+let btn=document.createElement("button")
+
+btn.innerText="Sil"
+
+btn.style.marginLeft="10px"
+
+btn.onclick=function(){
+
+cows.splice(index,1)
+
+localStorage.setItem("cows", JSON.stringify(cows))
+
+renderCows()
+
+}
+
+li.appendChild(btn)
+
+list.appendChild(li)
+
+})
+
+}
+
+
+
 
 function addVaccine(){
-  let id=document.getElementById("vCowID").value
-  let date=document.getElementById("vDate").value
-  if(!id || !date) return;
-  let list=document.getElementById("vaccineList")
-  let li=document.createElement("li")
-  li.innerText="İnek "+id+" - Aşı Tarihi: "+date
-  list.appendChild(li)
-  document.getElementById("vCowID").value=""
-  document.getElementById("vDate").value=""
+
+let id=document.getElementById("vCowID").value
+
+let date=document.getElementById("vDate").value
+
+if(!id || !date) return
+
+let list=document.getElementById("vaccineList")
+
+let li=document.createElement("li")
+
+li.innerText="İnek "+id+" - Aşı Tarihi: "+date
+
+list.appendChild(li)
+
+document.getElementById("vCowID").value=""
+
+document.getElementById("vDate").value=""
+
 }
 
-// Simülasyonlar kaldırıldı
-function simulateData(){}
-function simulateHeat(){}
+
+
 </script>
+
 
 </body>
 </html>
