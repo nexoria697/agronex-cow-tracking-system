@@ -1,313 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Agronex Cow Tracking System</title>
-
 <style>
-
-body{
-font-family:Arial;
-background:#e8f5e9;
-margin:0;
-text-align:center;
-}
-
-header{
-background:#2e7d32;
-color:white;
-padding:20px;
-}
-
-.container{
-margin-top:30px;
-}
-
-button{
-padding:10px 20px;
-margin:5px;
-border:none;
-background:#4CAF50;
-color:white;
-cursor:pointer;
-border-radius:5px;
-}
-
-input{
-padding:8px;
-margin:5px;
-width:200px;
-}
-
-.section{
-display:none;
-margin-top:20px;
-}
-
-ul{
-list-style:none;
-padding-left:0;
-}
-
+  body { font-family: Arial; background-color: #f0fff0; color: #006400; }
+  h2 { text-align: center; }
+  table { border-collapse: collapse; width: 90%; margin: auto; }
+  th, td { border: 1px solid #006400; padding: 8px; text-align: center; }
+  th { background-color: #98fb98; }
+  tr:nth-child(even) { background-color: #e6ffe6; }
 </style>
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 </head>
-
-
 <body>
+<h2>Agronex Cow Tracking System</h2>
 
-
-<header>
-<h1>Agronex Cow Tracking System</h1>
-</header>
-
-
-<div id="loginSection" class="container">
-
-<h2>Giriş Yap</h2>
-
-<input id="loginEmail" placeholder="Gmail"><br>
-<input id="loginPassword" type="password" placeholder="Şifre"><br>
-
-<button onclick="login()">Giriş Yap</button>
-
-<hr>
-
-<h2>Üye Ol</h2>
-
-<input id="email" placeholder="Gmail"><br>
-<input id="password" type="password" placeholder="Şifre"><br>
-
-<button onclick="register()">Üye Ol</button>
-
-</div>
-
-
-
-<div id="systemPanel" class="container section">
-
-<h2>Kontrol Paneli</h2>
-
-<button onclick="showTab('dashboard')">Dashboard</button>
-<button onclick="showTab('cow')">İnek Takip</button>
-<button onclick="showTab('vaccine')">Aşı Takvimi</button>
-<button onclick="showTab('heat')">Kızgınlık</button>
-
-
-
-<div id="dashboard" class="section">
-
-<h3>Dashboard</h3>
-
-<p>ESP32 istasyonu bağlandığında veriler burada görünecek.</p>
-
-</div>
-
-
-
-<div id="cow" class="section">
-
-<h3>İnek Takip</h3>
-
-<input id="cowID" placeholder="İnek ID">
-
-<button onclick="addCow()">İnek Ekle</button>
-
-<ul id="cowList"></ul>
-
-</div>
-
-
-
-<div id="vaccine" class="section">
-
-<h3>Aşı Takvimi</h3>
-
-<input id="vCowID" placeholder="İnek ID"><br>
-
-<input id="vDate" type="date"><br>
-
-<button onclick="addVaccine()">Ekle</button>
-
-<ul id="vaccineList"></ul>
-
-</div>
-
-
-
-<div id="heat" class="section">
-
-<h3>Kızgınlık Algılama</h3>
-
-<ul id="heatList"></ul>
-
-<p>ESP32 bağlandığında veriler buraya gelecek.</p>
-
-</div>
-
-</div>
-
-
-
+<table id="cowTable">
+  <tr>
+    <th>Inek ID</th>
+    <th>Sıcaklık (°C)</th>
+    <th>Hareket</th>
+  </tr>
+</table>
 
 <script>
-
-
-function register(){
-
-let email=document.getElementById("email").value
-let password=document.getElementById("password").value
-
-
-if(!email.includes("@gmail.com")){
-alert("Sadece gmail kullanabilirsiniz")
-return
-}
-
-if(localStorage.getItem(email)){
-alert("Bu email zaten kayıtlı!")
-return
-}
-
-localStorage.setItem(email,password)
-
-alert("Üyelik oluşturuldu")
-
-}
-
-
-
-function login(){
-
-let email=document.getElementById("loginEmail").value
-let password=document.getElementById("loginPassword").value
-
-let storedPassword = localStorage.getItem(email)
-
-if(storedPassword === null){
-alert("Bu email ile kayıtlı hesap yok!")
-return
-}
-
-if(storedPassword !== password){
-alert("Şifre yanlış!")
-return
-}
-
-alert("Giriş başarılı")
-
-document.getElementById("loginSection").style.display="none"
-
-document.getElementById("systemPanel").style.display="block"
-
-renderCows()
-
-}
-
-
-
-
-function showTab(id){
-
-let tabs=document.querySelectorAll('#systemPanel .section')
-
-tabs.forEach(t=>t.style.display='none')
-
-document.getElementById(id).style.display='block'
-
-}
-
-
-
-
-
-function addCow(){
-
-let id=document.getElementById("cowID").value
-
-if(!id) return
-
-let cows = JSON.parse(localStorage.getItem("cows")) || []
-
-cows.push(id)
-
-localStorage.setItem("cows", JSON.stringify(cows))
-
-renderCows()
-
-document.getElementById("cowID").value=""
-
-}
-
-
-
-
-function renderCows(){
-
-let cows = JSON.parse(localStorage.getItem("cows")) || []
-
-let list = document.getElementById("cowList")
-
-list.innerHTML=""
-
-cows.forEach((cow,index)=>{
-
-let li = document.createElement("li")
-
-li.innerText="İnek ID: "+cow
-
-let btn=document.createElement("button")
-
-btn.innerText="Sil"
-
-btn.style.marginLeft="10px"
-
-btn.onclick=function(){
-
-cows.splice(index,1)
-
-localStorage.setItem("cows", JSON.stringify(cows))
-
-renderCows()
-
-}
-
-li.appendChild(btn)
-
-list.appendChild(li)
-
-})
-
-}
-
-
-
-
-function addVaccine(){
-
-let id=document.getElementById("vCowID").value
-
-let date=document.getElementById("vDate").value
-
-if(!id || !date) return
-
-let list=document.getElementById("vaccineList")
-
-let li=document.createElement("li")
-
-li.innerText="İnek "+id+" - Aşı Tarihi: "+date
-
-list.appendChild(li)
-
-document.getElementById("vCowID").value=""
-
-document.getElementById("vDate").value=""
-
-}
-
-
-
+  // MQTT broker ve kanal
+  const broker = 'wss://test.mosquitto.org:8081/mqtt';
+  const topic = 'agronex/cowdata';
+
+  // MQTT client oluştur
+  const client = mqtt.connect(broker);
+
+  client.on('connect', () => {
+    console.log('MQTT bağlandı');
+    client.subscribe(topic, (err) => {
+      if (!err) console.log('Abone olundu: ' + topic);
+    });
+  });
+
+  client.on('message', (topic, message) => {
+    const data = message.toString().split(',');
+    const inekID = data[0];
+    const sicaklik = data[1];
+    const hareket = data[2];
+
+    // Tabloya ekle/güncelle
+    const table = document.getElementById('cowTable');
+    const existingRow = document.getElementById('row-' + inekID);
+    if(existingRow) existingRow.remove();
+
+    const row = table.insertRow();
+    row.id = 'row-' + inekID;
+    row.insertCell(0).innerText = inekID;
+    row.insertCell(1).innerText = sicaklik;
+    row.insertCell(2).innerText = hareket;
+  });
 </script>
-
-
 </body>
 </html>
